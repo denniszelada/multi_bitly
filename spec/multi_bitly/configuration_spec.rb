@@ -3,24 +3,48 @@ require 'spec_helper'
 describe MultiBitly::Configuration do
   describe '#accounts' do
     context 'when set' do
-      before do
-        MultiBitly::configure do |config|
-          config.accounts = [
+      context 'with keys of symbols' do
+        before do
+          MultiBitly::configure do |config|
+            config.accounts = [
+              { username: 'user1', api_key: 'key1' },
+              { username: 'user2', api_key: 'key2' }
+            ]
+          end
+        end
+
+        after do
+          MultiBitly.configuration = nil
+        end
+
+        it 'uses the supplied accounts' do
+          expect(MultiBitly.configuration.accounts).to eq([
             { username: 'user1', api_key: 'key1' },
             { username: 'user2', api_key: 'key2' }
-          ]
+          ])
         end
       end
 
-      after do
-        MultiBitly.configuration = nil
-      end
+      context 'with capitalized keys' do
+        before do
+          MultiBitly::configure do |config|
+            config.accounts = [
+              { 'USERNAME' => 'user1', 'API_KEY' => 'key1' },
+              { 'USERNAME' => 'user2', 'API_KEY' => 'key2' }
+            ]
+          end
+        end
 
-      it 'uses the supplied accounts' do
-        expect(MultiBitly.configuration.accounts).to eq([
-          { username: 'user1', api_key: 'key1' },
-          { username: 'user2', api_key: 'key2' }
-        ])
+        after do
+          MultiBitly.configuration = nil
+        end
+
+        it 'uses the supplied accounts' do
+          expect(MultiBitly.configuration.accounts).to eq([
+            { username: 'user1', api_key: 'key1' },
+            { username: 'user2', api_key: 'key2' }
+          ])
+        end
       end
     end
 
